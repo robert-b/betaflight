@@ -31,6 +31,7 @@
 #include "common/axis.h"
 #include "common/maths.h"
 #include "common/filter.h"
+#include "common/dynLpfx.h"
 
 #include "config/feature.h"
 #include "config/simplified_tuning.h"
@@ -136,6 +137,21 @@ void pgResetFn_gyroConfig(gyroConfig_t *gyroConfig)
     gyroConfig->dyn_lpf_curve_expo = 5;
 	gyroConfig->simplified_gyro_filter = false;
 	gyroConfig->simplified_gyro_filter_multiplier = SIMPLIFIED_TUNING_DEFAULT;
+#ifdef USE_DYN_LPFX
+    gyroConfig->dynlpfx_fmin = DEFAULT_DYNLPFX_FMIN;
+    gyroConfig->dynlpfx_fmax = DEFAULT_DYNLPFX_FMAX;
+    gyroConfig->dynlpfx_cutoffSlope = DEFAULT_DYNLPFX_DS_REV;
+    gyroConfig->dynlpfx_fc_fc = DEFAULT_DYNLPFX_FC_FC;
+    gyroConfig->dynlpfx_Q = DEFAULT_DYNLPFX_Q;
+    gyroConfig->dynlpfx_enable = DEFAULT_DYNLPFX_ENABLE;
+    gyroConfig->dynlpfx_type = DEFAULT_DYNLPFX_TYPE;
+    gyroConfig->dynlpfx_alpha = DEFAULT_DYNLPFX_ALPHA;
+    gyroConfig->dynlpfx_abg_filter_type = 0;
+
+    gyroConfig->dynlpfx_center_threshold = DEFAULT_DYNLPFX_CENTER_THRESHOLD;
+    gyroConfig->dynlpfx_throttle_threshold = DEFAULT_DYNLPFX_THROTTLE_THRESHOLD;
+    gyroConfig->dynlpfx_throttle_gain = DEFAULT_DYNLPFX_THROTTLE_GAIN;
+#endif
 }
 
 #ifdef USE_GYRO_DATA_ANALYSE

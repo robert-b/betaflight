@@ -60,6 +60,19 @@ typedef enum {
     FILTER_BPF,
 } biquadFilterType_e;
 
+typedef struct alphaBetaGammaFilter_s {
+    float a, b, g;
+    float ak_1, vk_1, xk_1;
+    float dT, dT2;
+} alphaBetaGammaFilter_t;
+
+typedef enum
+{
+	CRITICAL_DAMPED = 0,
+	UNDER_DAMPED,
+
+}eAlphaBetaGammaFilter;
+
 typedef float (*filterApplyFnPtr)(filter_t *filter, float input);
 
 float nullFilterApply(filter_t *filter, float input);
@@ -83,3 +96,6 @@ float pt1FilterApply(pt1Filter_t *filter, float input);
 
 void slewFilterInit(slewFilter_t *filter, float slewLimit, float threshold);
 float slewFilterApply(slewFilter_t *filter, float input);
+
+void ABGInit(alphaBetaGammaFilter_t *filter, float alpha, float dt, eAlphaBetaGammaFilter ftype);
+float alphaBetaGammaApply(alphaBetaGammaFilter_t *filter, float input);

@@ -1423,6 +1423,17 @@ static bool blackboxWriteSysinfo(void)
         BLACKBOX_PRINT_HEADER_LINE("dyn_notch_q", "%d",                     gyroConfig()->dyn_notch_q);
         BLACKBOX_PRINT_HEADER_LINE("dyn_notch_min_hz", "%d",                gyroConfig()->dyn_notch_min_hz);
 #endif
+#ifdef USE_DYN_LPFX
+        BLACKBOX_PRINT_HEADER_LINE("dynlpfx_enable", "%d",                  gyroConfig()->dynlpfx_enable);
+        BLACKBOX_PRINT_HEADER_LINE("dynlpfx_type", "%d",                    gyroConfig()->dynlpfx_type);
+        BLACKBOX_PRINT_HEADER_LINE("dynlpfx_Q", "%d",                       gyroConfig()->dynlpfx_Q);
+        BLACKBOX_PRINT_HEADER_LINE("dynlpfx_der_slope_rev", "%d",           gyroConfig()->dynlpfx_cutoffSlope);
+        BLACKBOX_PRINT_HEADER_LINE("dynlpfx_fmin", "%d",                    gyroConfig()->dynlpfx_fmin);
+        BLACKBOX_PRINT_HEADER_LINE("dynlpfx_fmax", "%d",                    gyroConfig()->dynlpfx_fmax);
+        BLACKBOX_PRINT_HEADER_LINE("dynlpfx_fc_fc", "%d",                   gyroConfig()->dynlpfx_fc_fc);
+        BLACKBOX_PRINT_HEADER_LINE("dynlpfx_alpha", "%d",                   gyroConfig()->dynlpfx_alpha);
+        BLACKBOX_PRINT_HEADER_LINE("dynlpfx_abg_ftype", "%d",               gyroConfig()->dynlpfx_abg_filter_type);
+#endif
 #ifdef USE_DSHOT_TELEMETRY
         BLACKBOX_PRINT_HEADER_LINE("dshot_bidir", "%d",                     motorConfig()->dev.useDshotTelemetry);
 #endif

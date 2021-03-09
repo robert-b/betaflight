@@ -689,6 +689,23 @@ const clivalue_t valueTable[] = {
     { "dyn_lpf_gyro_max_hz",        VAR_UINT16 | MASTER_VALUE, .config.minmaxUnsigned = { 0, DYN_LPF_FILTER_FREQUENCY_MAX }, PG_GYRO_CONFIG, offsetof(gyroConfig_t, dyn_lpf_gyro_max_hz) },
     { "dyn_lpf_gyro_curve_expo",    VAR_UINT8  | MASTER_VALUE, .config.minmaxUnsigned = { 0, 10 }, PG_GYRO_CONFIG, offsetof(gyroConfig_t, dyn_lpf_curve_expo) },
 #endif
+#ifdef USE_DYN_LPFX
+    { "dynlpfx_fmin",                VAR_UINT16 | MASTER_VALUE, .config.minmax = { 0, 1000 },   PG_GYRO_CONFIG, offsetof(gyroConfig_t, dynlpfx_fmin) },
+    { "dynlpfx_fmax",                VAR_UINT16 | MASTER_VALUE, .config.minmax = { 0, 1000 },   PG_GYRO_CONFIG, offsetof(gyroConfig_t, dynlpfx_fmax) },
+    { "dynlpfx_fc_fc",               VAR_UINT16 | MASTER_VALUE, .config.minmax = { 0,   50 },   PG_GYRO_CONFIG, offsetof(gyroConfig_t, dynlpfx_fc_fc) },
+    { "dynlpfx_cutoff_slope",       VAR_UINT16 | MASTER_VALUE, .config.minmax = { 1,  512 },   PG_GYRO_CONFIG, offsetof(gyroConfig_t, dynlpfx_cutoffSlope) },
+
+    { "dynlpfx_Q",                   VAR_UINT16 | MASTER_VALUE, .config.minmax = { 0, 2000 },   PG_GYRO_CONFIG, offsetof(gyroConfig_t, dynlpfx_Q) },
+    { "dynlpfx_alpha"    ,           VAR_UINT16 | MASTER_VALUE, .config.minmax = { 10,4000 },   PG_GYRO_CONFIG, offsetof(gyroConfig_t, dynlpfx_alpha) },
+    { "dynlpfx_enable",              VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0,    1 },   PG_GYRO_CONFIG, offsetof(gyroConfig_t, dynlpfx_enable) },
+    { "dynlpfx_abg_ftype",           VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0,    1 },   PG_GYRO_CONFIG, offsetof(gyroConfig_t, dynlpfx_abg_filter_type) },
+    { "dynlpfx_type",                VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0,    3 },   PG_GYRO_CONFIG, offsetof(gyroConfig_t, dynlpfx_type) },
+    { "dynlpfx_gain",                VAR_UINT16 | MASTER_VALUE, .config.minmax = { 0,  200 },   PG_GYRO_CONFIG, offsetof(gyroConfig_t, dynlpfx_gain) },
+    { "dynlpfx_center_threshold",    VAR_UINT16 | MASTER_VALUE, .config.minmax = { 0,  100 },    PG_GYRO_CONFIG, offsetof(gyroConfig_t, dynlpfx_center_threshold) },
+    { "dynlpfx_throttle_threshold",  VAR_UINT16 | MASTER_VALUE, .config.minmax = { 0,  100 },    PG_GYRO_CONFIG, offsetof(gyroConfig_t, dynlpfx_throttle_threshold) },
+    { "dynlpfx_throttle_gain",       VAR_UINT16 | MASTER_VALUE, .config.minmax = { 0,  200 },    PG_GYRO_CONFIG, offsetof(gyroConfig_t, dynlpfx_throttle_gain) },
+    { "dynlpfx_enable",              VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0,    1 },    PG_GYRO_CONFIG, offsetof(gyroConfig_t, dynlpfx_enable) },
+#endif
     { "gyro_filter_debug_axis",     VAR_UINT8  | MASTER_VALUE | MODE_LOOKUP, .config.lookup = { TABLE_GYRO_FILTER_DEBUG }, PG_GYRO_CONFIG, offsetof(gyroConfig_t, gyro_filter_debug_axis) },
 
 // PG_ACCELEROMETER_CONFIG

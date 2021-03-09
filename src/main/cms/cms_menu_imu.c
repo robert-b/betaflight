@@ -521,6 +521,22 @@ static uint8_t cmsx_ff_interpolate_sp;
 static uint8_t cmsx_ff_smooth_factor;
 #endif
 
+#ifdef USE_DYN_LPFX
+static uint16_t gyroConfig_dynlpfx_alpha;
+static uint16_t gyroConfig_dynlpfx_fmin;
+static uint16_t gyroConfig_dynlpfx_fmax;
+static uint16_t gyroConfig_dynlpfx_gain;
+static uint16_t gyroConfig_dynlpfx_fc_fc;
+static uint16_t gyroConfig_dynlpfx_Q;
+static uint8_t  gyroConfig_dynlpfx_enable;
+static uint8_t  gyroConfig_dynlpfx_abg_filter_type;
+static uint8_t  gyroConfig_dynlpfx_type;
+static uint16_t gyroConfig_dynlpfx_throttle_threshold;
+static uint16_t gyroConfig_dynlpfx_throttle_gain;
+static uint16_t gyroConfig_dynlpfx_cutoffSlope;
+
+#endif
+
 static const void *cmsx_profileOtherOnEnter(displayPort_t *pDisp)
 {
     UNUSED(pDisp);
@@ -543,6 +559,19 @@ static const void *cmsx_profileOtherOnEnter(displayPort_t *pDisp)
     cmsx_thrustLinearization = pidProfile->thrustLinearization;
     cmsx_motorOutputLimit = pidProfile->motor_output_limit;
     cmsx_autoProfileCellCount = pidProfile->auto_profile_cell_count;
+
+#ifdef USE_DYN_LPFX
+    gyroConfig_dynlpfx_alpha = gyroConfig()->dynlpfx_alpha;
+    gyroConfig_dynlpfx_fmin = gyroConfig()->dynlpfx_fmin;
+    gyroConfig_dynlpfx_fmax = gyroConfig()->dynlpfx_fmax;
+    gyroConfig_dynlpfx_gain = gyroConfig()->dynlpfx_gain;
+    gyroConfig_dynlpfx_cutoffSlope = gyroConfig()->dynlpfx_cutoffSlope;
+    gyroConfig_dynlpfx_fc_fc = gyroConfig()->dynlpfx_fc_fc;
+    gyroConfig_dynlpfx_Q = gyroConfig()->dynlpfx_Q;
+    gyroConfig_dynlpfx_enable = gyroConfig()->dynlpfx_enable;
+    gyroConfig_dynlpfx_abg_filter_type = gyroConfig()->dynlpfx_abg_filter_type;
+    gyroConfig_dynlpfx_type = gyroConfig()->dynlpfx_type;
+#endif
 
 #ifdef USE_D_MIN
     for (unsigned i = 0; i < XYZ_AXIS_COUNT; i++) {
@@ -591,7 +620,21 @@ static const void *cmsx_profileOtherOnExit(displayPort_t *pDisp, const OSD_Entry
     pidProfile->motor_output_limit = cmsx_motorOutputLimit;
     pidProfile->auto_profile_cell_count = cmsx_autoProfileCellCount;
 
-#ifdef USE_D_MIN
+#ifdef USE_DYN_LPFX
+    gyroConfigMutable()->dynlpfx_cutoffSlope = gyroConfig_dynlpfx_cutoffSlope;
+    gyroConfigMutable()->dynlpfx_alpha = gyroConfig_dynlpfx_alpha;
+    gyroConfigMutable()->dynlpfx_fmin = gyroConfig_dynlpfx_fmin;
+    gyroConfigMutable()->dynlpfx_fmax = gyroConfig_dynlpfx_fmax;
+    gyroConfigMutable()->dynlpfx_cutoffSlope = gyroConfig_dynlpfx_gain;
+    gyroConfigMutable()->dynlpfx_fc_fc = gyroConfig_dynlpfx_fc_fc;
+    gyroConfigMutable()->dynlpfx_Q = gyroConfig_dynlpfx_Q;
+    gyroConfigMutable()->dynlpfx_enable = gyroConfig_dynlpfx_enable;
+    gyroConfigMutable()->dynlpfx_abg_filter_type = gyroConfig_dynlpfx_abg_filter_type;
+    gyroConfigMutable()->dynlpfx_type = gyroConfig_dynlpfx_type;
+    gyroConfigMutable()->dynlpfx_gain = gyroConfig_dynlpfx_gain;
+#endif
+
+    #ifdef USE_D_MIN
     for (unsigned i = 0; i < XYZ_AXIS_COUNT; i++) {
         pidProfile->d_min[i] = cmsx_d_min[i];
     }
@@ -650,7 +693,22 @@ static const OSD_Entry cmsx_menuProfileOtherEntries[] = {
 
     { "AUTO CELL CNT", OME_INT8, NULL, &(OSD_INT8_t) { &cmsx_autoProfileCellCount, AUTO_PROFILE_CELL_COUNT_CHANGE, MAX_AUTO_DETECT_CELL_COUNT, 1}, 0 },
 
-#ifdef USE_D_MIN
+#ifdef USE_DYN_LPFX
+    { "DLPFX ENABLE", OME_UINT8, NULL, &(OSD_UINT8_t)   { &gyroConfig_dynlpfx_enable, 0, 1, 1 }, 0 },
+    { "DLPFX ABG_FTYPE", OME_UINT8, NULL, &(OSD_UINT8_t){ &gyroConfig_dynlpfx_abg_filter_type, 0, 1, 1 }, 0 },
+    { "DLPFX Q",      OME_UINT16, NULL, &(OSD_UINT16_t) { &gyroConfig_dynlpfx_Q, 0,   2000, 1 }, 0 },
+    { "DLPFX CUTOFF SLOPE",   OME_UINT16, NULL, &(OSD_UINT16_t) { &gyroConfig_dynlpfx_cutoffSlope, 1,  512, 1 }, 0 },
+    { "DLPFX FMIN",   OME_UINT16, NULL, &(OSD_UINT16_t) { &gyroConfig_dynlpfx_fmin, 0, 1000, 1 }, 0 },
+    { "DLPFX Alpha",  OME_UINT16, NULL, &(OSD_UINT16_t) { &gyroConfig_dynlpfx_alpha, 100, 4000, 10 }, 0 },
+    { "DLPFX TYPE",   OME_UINT8, NULL, &(OSD_UINT8_t) { &gyroConfig_dynlpfx_type, 0, 3, 1 }, 0 },
+    { "DLPFX FMAX",   OME_UINT16, NULL, &(OSD_UINT16_t) { &gyroConfig_dynlpfx_fmax, 0, 1000, 1 }, 0 },
+    { "DLPFX FCFC",   OME_UINT16, NULL, &(OSD_UINT16_t) { &gyroConfig_dynlpfx_fc_fc, 0,   50, 1 }, 0 },
+    { "DLPFx THRO_BRKPT",  OME_UINT16, NULL, &(OSD_UINT16_t) { &gyroConfig_dynlpfx_throttle_threshold, 0,   100, 1 }, 0 },
+    { "DLPFx THRO_GAIN",   OME_UINT16, NULL, &(OSD_UINT16_t) { &gyroConfig_dynlpfx_throttle_gain, 0,   20, 1 }, 0 },
+    { "DLPFx GAIN",   OME_UINT16, NULL, &(OSD_UINT16_t) { &gyroConfig_dynlpfx_gain, 0,  150, 1 }, 0 },
+#endif
+
+	#ifdef USE_D_MIN
     { "D_MIN ROLL",  OME_UINT8,  NULL, &(OSD_UINT8_t) { &cmsx_d_min[FD_ROLL],      0, 100, 1 }, 0 },
     { "D_MIN PITCH", OME_UINT8,  NULL, &(OSD_UINT8_t) { &cmsx_d_min[FD_PITCH],     0, 100, 1 }, 0 },
     { "D_MIN YAW",   OME_UINT8,  NULL, &(OSD_UINT8_t) { &cmsx_d_min[FD_YAW],       0, 100, 1 }, 0 },

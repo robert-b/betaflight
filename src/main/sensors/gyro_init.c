@@ -31,6 +31,7 @@
 #include "common/axis.h"
 #include "common/maths.h"
 #include "common/filter.h"
+#include "common/dynLpfx.h"
 
 #include "config/config.h"
 
@@ -241,6 +242,10 @@ void gyroInitFilters(void)
         gyro_lowpass_hz = gyroConfig()->dyn_lpf_gyro_min_hz;
     }
 #endif
+#ifdef USE_DYN_LPFX
+    init_dynLpfx();
+#endif
+
 
     gyroInitLowpassFilterLpf(
       FILTER_LOWPASS,
@@ -249,12 +254,13 @@ void gyroInitFilters(void)
       gyro.targetLooptime
     );
 
-    gyro.downsampleFilterEnabled = gyroInitLowpassFilterLpf(
-      FILTER_LOWPASS2,
-      gyroConfig()->gyro_lowpass2_type,
-      gyroConfig()->gyro_lowpass2_hz,
-      gyro.sampleLooptime
-    );
+//    gyro.downsampleFilterEnabled = gyroInitLowpassFilterLpf(
+//      FILTER_LOWPASS2,
+//      gyroConfig()->gyro_lowpass2_type,
+//      gyroConfig()->gyro_lowpass2_hz,
+//      gyro.sampleLooptime
+//    );
+    gyro.downsampleFilterEnabled = false;
 
     gyroInitFilterNotch1(gyroConfig()->gyro_soft_notch_hz_1, gyroConfig()->gyro_soft_notch_cutoff_1);
     gyroInitFilterNotch2(gyroConfig()->gyro_soft_notch_hz_2, gyroConfig()->gyro_soft_notch_cutoff_2);

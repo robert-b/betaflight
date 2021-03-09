@@ -206,6 +206,24 @@ typedef struct gyroConfig_s {
     uint8_t dyn_lpf_curve_expo; // set the curve for dynamic gyro lowpass filter
     uint8_t  simplified_gyro_filter;
     uint8_t  simplified_gyro_filter_multiplier;
+#ifdef USE_DYN_LPFX
+    uint16_t dynlpfx_fmin;
+    uint16_t dynlpfx_fmax;
+    uint16_t dynlpfx_cutoffSlope;
+    uint16_t dynlpfx_fc_fc;
+    uint16_t dynlpfx_spare1;	// mssing variables not causing eeprom issues
+    uint16_t dynlpfx_spare2;
+    uint16_t dynlpfx_Q;
+    uint16_t dynlpfx_alpha;
+    uint8_t  dynlpfx_enable;
+    uint8_t  dynlpfx_type;
+    uint8_t  dynlpfx_abg_filter_type;
+    uint16_t dynlpfx_center_threshold;
+    uint16_t dynlpfx_throttle_threshold;
+    uint16_t dynlpfx_throttle_gain;
+    uint16_t dynlpfx_gain;
+
+#endif
 } gyroConfig_t;
 
 PG_DECLARE(gyroConfig_t, gyroConfig);

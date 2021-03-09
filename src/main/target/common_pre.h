@@ -30,6 +30,9 @@
 
 //#define SCHEDULER_DEBUG // define this to use scheduler debug[] values. Undefined by default for performance reasons
 
+// the additional filtering
+#define USE_DYN_LPFX
+
 #define I2C1_OVERCLOCK true
 #define I2C2_OVERCLOCK true
 

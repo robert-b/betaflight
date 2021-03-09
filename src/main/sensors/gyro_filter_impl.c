@@ -19,6 +19,7 @@
  */
 
 #include "platform.h"
+#include "common/dynLpfx.h"
 
 static FAST_CODE void GYRO_FILTER_FUNCTION_NAME(void)
 {
@@ -66,6 +67,9 @@ static FAST_CODE void GYRO_FILTER_FUNCTION_NAME(void)
         // DEBUG_GYRO_SAMPLE(2) Record the post-RPM Filter value for the selected debug axis
         GYRO_FILTER_AXIS_DEBUG_SET(axis, DEBUG_GYRO_SAMPLE, 2, lrintf(gyroADCf));
 
+#ifdef USE_DYN_LPFX
+        gyroADCf = dynLpfxApply(axis, gyroADCf);
+#endif
         // apply static notch filters and software lowpass filters
         gyroADCf = gyro.notchFilter1ApplyFn((filter_t *)&gyro.notchFilter1[axis], gyroADCf);
         gyroADCf = gyro.notchFilter2ApplyFn((filter_t *)&gyro.notchFilter2[axis], gyroADCf);
