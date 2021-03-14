@@ -220,6 +220,7 @@ void resetPidProfile(pidProfile_t *pidProfile)
         .simplified_ff_gain = SIMPLIFIED_TUNING_DEFAULT,
         .simplified_dterm_filter = false,
         .simplified_dterm_filter_multiplier = SIMPLIFIED_TUNING_DEFAULT,
+		.dtermMeasurementSlider = 100,
     );
 #ifndef USE_D_MIN
     pidProfile->pid[PID_ROLL].D = 30;
@@ -803,6 +804,7 @@ static FAST_CODE_NOINLINE float applyLaunchControl(int axis, const rollAndPitchT
 void FAST_CODE pidController(const pidProfile_t *pidProfile, timeUs_t currentTimeUs)
 {
     static float previousGyroRateDterm[XYZ_AXIS_COUNT];
+    static float previousErrorRate[XYZ_AXIS_COUNT];
 #ifdef USE_INTERPOLATED_SP
     static FAST_DATA_ZERO_INIT uint32_t lastFrameNumber;
 #endif
@@ -1056,8 +1058,17 @@ void FAST_CODE pidController(const pidProfile_t *pidProfile, timeUs_t currentTim
             // This is done to avoid DTerm spikes that occur with dynamically
             // calculated deltaT whenever another task causes the PID
             // loop execution to be delayed.
-            const float delta =
-                - (gyroRateDterm[axis] - previousGyroRateDterm[axis]) * pidRuntime.pidFrequency;
+            //const float delta =
+            //    - (gyroRateDterm[axis] - previousGyroRateDterm[axis]) * pidRuntime.pidFrequency;
+
+            const float dtermFromMeasurement = -(gyroRateDterm[axis] - previousGyroRateDterm[axis]);
+            const float dtermFromError = errorRate - previousErrorRate[axis];
+
+            previousGyroRateDterm[axis] = gyroRateDterm[axis];
+            previousErrorRate[axis] = errorRate;
+
+            const float delta = ((dtermFromMeasurement * pidRuntime.dtermMeasurementSlider) + (dtermFromError * pidRuntime.dtermMeasurementSliderInverse)) * pidRuntime.pidFrequency;
+
             float preTpaData = pidRuntime.pidCoefficient[axis].Kd * delta;
 
 #if defined(USE_ACC)
@@ -1107,8 +1118,6 @@ void FAST_CODE pidController(const pidProfile_t *pidProfile, timeUs_t currentTim
                 DEBUG_SET(DEBUG_D_LPF, 3, 0);
             }
         }
-
-        previousGyroRateDterm[axis] = gyroRateDterm[axis];
 
         // -----calculate feedforward component
 #ifdef USE_ABSOLUTE_CONTROL

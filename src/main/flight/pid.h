@@ -225,6 +225,8 @@ typedef struct pidProfile_s {
 
     uint8_t simplified_dterm_filter;
     uint8_t simplified_dterm_filter_multiplier;
+
+    uint8_t  dtermMeasurementSlider;
 } pidProfile_t;
 
 PG_DECLARE_ARRAY(pidProfile_t, PID_PROFILE_COUNT, pidProfiles);
@@ -387,6 +389,10 @@ typedef struct pidRuntime_s {
     ffInterpolationType_t ffFromInterpolatedSetpoint;
     float ffSmoothFactor;
 #endif
+
+    float dtermMeasurementSlider;
+    float dtermMeasurementSliderInverse;
+
 } pidRuntime_t;
 
 extern pidRuntime_t pidRuntime;

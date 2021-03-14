@@ -489,6 +489,7 @@ static CMS_Menu cmsx_menuLaunchControl = {
 };
 #endif
 
+static uint8_t  cmsx_dterm_measurement_slider;
 static uint8_t  cmsx_feedForwardTransition;
 static uint8_t  cmsx_ff_boost;
 static uint8_t  cmsx_angleStrength;
@@ -595,6 +596,9 @@ static const void *cmsx_profileOtherOnEnter(displayPort_t *pDisp)
 #ifdef USE_BATTERY_VOLTAGE_SAG_COMPENSATION
     cmsx_vbat_sag_compensation = pidProfile->vbat_sag_compensation;
 #endif
+
+    cmsx_dterm_measurement_slider = pidProfile->dtermMeasurementSlider;
+
     return NULL;
 }
 
@@ -657,6 +661,9 @@ static const void *cmsx_profileOtherOnExit(displayPort_t *pDisp, const OSD_Entry
     pidProfile->vbat_sag_compensation = cmsx_vbat_sag_compensation;
 #endif
 
+    pidProfile->dtermMeasurementSlider = cmsx_dterm_measurement_slider;
+
+
     initEscEndpoints();
     return NULL;
 }
@@ -715,6 +722,8 @@ static const OSD_Entry cmsx_menuProfileOtherEntries[] = {
     { "D_MIN GAIN",  OME_UINT8,  NULL, &(OSD_UINT8_t) { &cmsx_d_min_gain,          0, 100, 1 }, 0 },
     { "D_MIN ADV",   OME_UINT8,  NULL, &(OSD_UINT8_t) { &cmsx_d_min_advance,       0, 200, 1 }, 0 },
 #endif
+
+	{ "D MEASUREMENT",   OME_UINT8,  NULL, &(OSD_UINT8_t){ &cmsx_dterm_measurement_slider,  0, 100, 1 }, 0 },
 
 #ifdef USE_BATTERY_VOLTAGE_SAG_COMPENSATION
     { "VBAT_SAG_COMP", OME_UINT8,  NULL, &(OSD_UINT8_t) { &cmsx_vbat_sag_compensation, 0, 150, 1 }, 0 },

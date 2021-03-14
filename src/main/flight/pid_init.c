@@ -406,6 +406,10 @@ void pidInitConfig(const pidProfile_t *pidProfile)
 #endif
 
     pidRuntime.levelRaceMode = pidProfile->level_race_mode;
+
+    pidRuntime.dtermMeasurementSlider = (float)pidProfile->dtermMeasurementSlider / 100.0f;
+    pidRuntime.dtermMeasurementSliderInverse = 1.0f - ((float)pidProfile->dtermMeasurementSlider / 100.0f);
+
 }
 
 void pidCopyProfile(uint8_t dstPidProfileIndex, uint8_t srcPidProfileIndex)
