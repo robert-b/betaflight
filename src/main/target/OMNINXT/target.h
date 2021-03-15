@@ -41,7 +41,7 @@
 
 #ifdef OMNINXT4
 #define USE_INVERTER
-#define INVERTER_PIN_UART2      PC5
+#define INVERTER_PIN_UART1      PC5
 #endif
 
 #define USE_ACC
