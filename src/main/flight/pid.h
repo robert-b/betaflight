@@ -227,6 +227,11 @@ typedef struct pidProfile_s {
     uint8_t simplified_dterm_filter_multiplier;
 
     uint8_t  dtermMeasurementSlider;
+    // dterm
+#ifdef USE_DYN_LPFX
+    uint16_t dynlpfx_alpha;
+    uint8_t  dynlpfx_abg_filter_type;
+#endif
 } pidProfile_t;
 
 PG_DECLARE_ARRAY(pidProfile_t, PID_PROFILE_COUNT, pidProfiles);

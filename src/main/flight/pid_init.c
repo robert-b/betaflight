@@ -31,7 +31,9 @@
 #include "common/axis.h"
 #include "common/filter.h"
 #include "common/maths.h"
-
+#ifdef USE_DYN_LPFX
+#include "common/dynlpfX.h"
+#endif
 #include "drivers/dshot_command.h"
 
 #include "fc/rc_controls.h"
@@ -69,6 +71,11 @@ static void pidSetTargetLooptime(uint32_t pidLooptime)
 void pidInitFilters(const pidProfile_t *pidProfile)
 {
     STATIC_ASSERT(FD_YAW == 2, FD_YAW_incorrect); // ensure yaw axis is 2
+
+    // dterm
+#ifdef USE_DYN_LPFX
+    init_dynLpfxDTerm(pidRuntime.dT, pidProfile->dynlpfx_alpha, pidProfile->dynlpfx_abg_filter_type);
+#endif
 
     if (targetPidLooptime == 0) {
         // no looptime set, so set all the filters to null
@@ -409,7 +416,6 @@ void pidInitConfig(const pidProfile_t *pidProfile)
 
     pidRuntime.dtermMeasurementSlider = (float)pidProfile->dtermMeasurementSlider / 100.0f;
     pidRuntime.dtermMeasurementSliderInverse = 1.0f - ((float)pidProfile->dtermMeasurementSlider / 100.0f);
-
 }
 
 void pidCopyProfile(uint8_t dstPidProfileIndex, uint8_t srcPidProfileIndex)

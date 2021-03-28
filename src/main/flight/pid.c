@@ -32,6 +32,10 @@
 #include "common/filter.h"
 #include "common/maths.h"
 
+#ifdef USE_DYN_LPFX
+#include "common/dynlpfX.h"
+#endif
+
 #include "config/config_reset.h"
 #include "config/simplified_tuning.h"
 
@@ -221,6 +225,11 @@ void resetPidProfile(pidProfile_t *pidProfile)
         .simplified_dterm_filter = false,
         .simplified_dterm_filter_multiplier = SIMPLIFIED_TUNING_DEFAULT,
 		.dtermMeasurementSlider = 100,
+	    // dterm
+#ifdef USE_DYN_LPFX
+	    .dynlpfx_alpha = 700,
+	    .dynlpfx_abg_filter_type = 1,
+#endif
     );
 #ifndef USE_D_MIN
     pidProfile->pid[PID_ROLL].D = 30;
@@ -1067,7 +1076,12 @@ void FAST_CODE pidController(const pidProfile_t *pidProfile, timeUs_t currentTim
             previousGyroRateDterm[axis] = gyroRateDterm[axis];
             previousErrorRate[axis] = errorRate;
 
-            const float delta = ((dtermFromMeasurement * pidRuntime.dtermMeasurementSlider) + (dtermFromError * pidRuntime.dtermMeasurementSliderInverse)) * pidRuntime.pidFrequency;
+            float delta = ((dtermFromMeasurement * pidRuntime.dtermMeasurementSlider) + (dtermFromError * pidRuntime.dtermMeasurementSliderInverse)) * pidRuntime.pidFrequency;
+
+            // dterm
+#ifdef USE_DYN_LPFX
+            delta = dynLpfxApplyDTerm(axis, delta);
+#endif
 
             float preTpaData = pidRuntime.pidCoefficient[axis].Kd * delta;
 

@@ -29,6 +29,7 @@ SF1eFilterConfiguration config;
 SF1eFilter dynlpfX[3];
 
 alphaBetaGammaFilter_t abgFilter[3];
+alphaBetaGammaFilter_t abgFilterDTerm[3];
 
 //TYPES
 //-----
@@ -161,6 +162,19 @@ FAST_CODE float fastKalmanUpdate(FastKalmanFilter_t *filter, float input, float 
     return filter->x;
 }
 
+
+//////////////////////////////
+//                          //
+//       DYN PT1 INIT       //
+//                          //
+//////////////////////////////
+void init_dynLpfxDTerm(float dT, uint16_t alpha, uint8_t filter_type)
+{
+    // ABG filter
+	ABGInit(&abgFilterDTerm[0], alpha, dT, filter_type);
+	ABGInit(&abgFilterDTerm[1], alpha, dT, filter_type);
+	ABGInit(&abgFilterDTerm[2], alpha, dT, filter_type);
+}
 
 //////////////////////////////
 //                          //
@@ -379,6 +393,10 @@ const float gyroDt = gyro.targetLooptime * 1e-6f;
  return output;
 }
 
+float dynLpfxApplyDTerm(int axis, float input)
+{
+	return  alphaBetaGammaApply(&abgFilterDTerm[axis], input);
+}
 
 float dynLpfxApply(int axis, float input)
 {

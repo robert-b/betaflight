@@ -25,3 +25,6 @@
 
 extern void init_dynLpfx(void);
 extern float dynLpfxApply(int axis, float input);
+
+extern void init_dynLpfxDTerm(float dT, uint16_t alpha, uint8_t filter_type);
+extern float dynLpfxApplyDTerm(int axis, float input);
