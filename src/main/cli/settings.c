@@ -705,6 +705,8 @@ const clivalue_t valueTable[] = {
     { "dynlpfx_throttle_threshold",  VAR_UINT16 | MASTER_VALUE, .config.minmax = { 0,  100 },    PG_GYRO_CONFIG, offsetof(gyroConfig_t, dynlpfx_throttle_threshold) },
     { "dynlpfx_throttle_gain",       VAR_UINT16 | MASTER_VALUE, .config.minmax = { 0,  200 },    PG_GYRO_CONFIG, offsetof(gyroConfig_t, dynlpfx_throttle_gain) },
     { "dynlpfx_enable",              VAR_UINT8  | MASTER_VALUE, .config.minmax = { 0,    1 },    PG_GYRO_CONFIG, offsetof(gyroConfig_t, dynlpfx_enable) },
+    { "dynlpfx_dterm_agb_type",      VAR_UINT8  | PROFILE_VALUE, .config.minmax = { 0,   1 }, PG_PID_PROFILE, offsetof(pidProfile_t, dynlpfx_abg_filter_type) },
+    { "dynlpfx_dterm_alpha",         VAR_INT16  | PROFILE_VALUE, .config.minmax = { 10,4000}, PG_PID_PROFILE, offsetof(pidProfile_t, dynlpfx_alpha) },
 #endif
 
     { "gyro_filter_debug_axis",     VAR_UINT8  | MASTER_VALUE | MODE_LOOKUP, .config.lookup = { TABLE_GYRO_FILTER_DEBUG }, PG_GYRO_CONFIG, offsetof(gyroConfig_t, gyro_filter_debug_axis) },

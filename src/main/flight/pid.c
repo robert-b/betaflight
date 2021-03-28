@@ -814,9 +814,6 @@ void FAST_CODE pidController(const pidProfile_t *pidProfile, timeUs_t currentTim
 {
     static float previousGyroRateDterm[XYZ_AXIS_COUNT];
     static float previousErrorRate[XYZ_AXIS_COUNT];
-#ifdef USE_INTERPOLATED_SP
-    static FAST_DATA_ZERO_INIT uint32_t lastFrameNumber;
-#endif
     static float previousRawGyroRateDterm[XYZ_AXIS_COUNT];
 
 #if defined(USE_ACC)
@@ -917,6 +914,7 @@ void FAST_CODE pidController(const pidProfile_t *pidProfile, timeUs_t currentTim
             DEBUG_SET(DEBUG_D_LPF, 1, lrintf(delta));
         }
 
+        gyroRateDterm[axis] = dynLpfxApplyDTerm(axis, gyroRateDterm[axis]);
         gyroRateDterm[axis] = pidRuntime.dtermNotchApplyFn((filter_t *) &pidRuntime.dtermNotch[axis], gyroRateDterm[axis]);
         gyroRateDterm[axis] = pidRuntime.dtermLowpassApplyFn((filter_t *) &pidRuntime.dtermLowpass[axis], gyroRateDterm[axis]);
         gyroRateDterm[axis] = pidRuntime.dtermLowpass2ApplyFn((filter_t *) &pidRuntime.dtermLowpass2[axis], gyroRateDterm[axis]);
@@ -930,8 +928,7 @@ void FAST_CODE pidController(const pidProfile_t *pidProfile, timeUs_t currentTim
 
 #ifdef USE_INTERPOLATED_SP
     bool newRcFrame = false;
-    if (lastFrameNumber != getRcFrameNumber()) {
-        lastFrameNumber = getRcFrameNumber();
+    if (getShouldUpdateFf()) {
         newRcFrame = true;
     }
 #endif
@@ -1076,12 +1073,7 @@ void FAST_CODE pidController(const pidProfile_t *pidProfile, timeUs_t currentTim
             previousGyroRateDterm[axis] = gyroRateDterm[axis];
             previousErrorRate[axis] = errorRate;
 
-            float delta = ((dtermFromMeasurement * pidRuntime.dtermMeasurementSlider) + (dtermFromError * pidRuntime.dtermMeasurementSliderInverse)) * pidRuntime.pidFrequency;
-
-            // dterm
-#ifdef USE_DYN_LPFX
-            delta = dynLpfxApplyDTerm(axis, delta);
-#endif
+            const float delta = ((dtermFromMeasurement * pidRuntime.dtermMeasurementSlider) + (dtermFromError * pidRuntime.dtermMeasurementSliderInverse)) * pidRuntime.pidFrequency;
 
             float preTpaData = pidRuntime.pidCoefficient[axis].Kd * delta;
 
