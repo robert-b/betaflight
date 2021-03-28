@@ -321,19 +321,19 @@ static const OSD_Entry cmsx_menuSimplifiedTuningEntries[] =
 {
     { "-- SIMPLIFIED PID --", OME_Label, NULL, NULL, 0},
     { "PID TUNING",    OME_TAB,   NULL, &(OSD_TAB_t)   { &cmsx_simplified_pids_mode, PID_SIMPLIFIED_TUNING_MODE_COUNT - 1, lookupTableSimplifiedTuningPidsMode }, 0 },
-    { "MASTER MULT",    OME_FLOAT, NULL, &(OSD_FLOAT_t) { &cmsx_simplified_master_multiplier, SIMPLIFIED_TUNING_MIN, SIMPLIFIED_TUNING_MAX, 1, 10 }, 0 },
-    { "R/P RATIO",      OME_FLOAT, NULL, &(OSD_FLOAT_t) { &cmsx_simplified_roll_pitch_ratio,  SIMPLIFIED_TUNING_MIN, SIMPLIFIED_TUNING_MAX, 1, 10 }, 0 },
-    { "I GAIN",         OME_FLOAT, NULL, &(OSD_FLOAT_t) { &cmsx_simplified_i_gain,            SIMPLIFIED_TUNING_MIN, SIMPLIFIED_TUNING_MAX, 1, 10 }, 0 },
-    { "PD RATIO",       OME_FLOAT, NULL, &(OSD_FLOAT_t) { &cmsx_simplified_pd_ratio,          SIMPLIFIED_TUNING_MIN, SIMPLIFIED_TUNING_MAX, 1, 10 }, 0 },
-    { "PD GAIN",        OME_FLOAT, NULL, &(OSD_FLOAT_t) { &cmsx_simplified_pd_gain,           SIMPLIFIED_TUNING_MIN, SIMPLIFIED_TUNING_MAX, 1, 10 }, 0 },
-    { "DMIN RATIO",     OME_FLOAT, NULL, &(OSD_FLOAT_t) { &cmsx_simplified_dmin_ratio,        SIMPLIFIED_TUNING_MIN, SIMPLIFIED_TUNING_MAX, 1, 10 }, 0 },
-    { "FF GAIN",        OME_FLOAT, NULL, &(OSD_FLOAT_t) { &cmsx_simplified_ff_gain,           SIMPLIFIED_TUNING_MIN, SIMPLIFIED_TUNING_MAX, 1, 10 }, 0 },
+    { "MASTER MULT",    OME_FLOAT, NULL, &(OSD_FLOAT_t) { &cmsx_simplified_master_multiplier, SIMPLIFIED_TUNING_MIN, SIMPLIFIED_TUNING_MAX, 5, 10 }, 0 },
+    { "R/P RATIO",      OME_FLOAT, NULL, &(OSD_FLOAT_t) { &cmsx_simplified_roll_pitch_ratio,  SIMPLIFIED_TUNING_MIN, SIMPLIFIED_TUNING_MAX, 5, 10 }, 0 },
+    { "I GAIN",         OME_FLOAT, NULL, &(OSD_FLOAT_t) { &cmsx_simplified_i_gain,            SIMPLIFIED_TUNING_MIN, SIMPLIFIED_TUNING_MAX, 5, 10 }, 0 },
+    { "PD RATIO",       OME_FLOAT, NULL, &(OSD_FLOAT_t) { &cmsx_simplified_pd_ratio,          SIMPLIFIED_TUNING_MIN, SIMPLIFIED_TUNING_MAX, 5, 10 }, 0 },
+    { "PD GAIN",        OME_FLOAT, NULL, &(OSD_FLOAT_t) { &cmsx_simplified_pd_gain,           SIMPLIFIED_TUNING_MIN, SIMPLIFIED_TUNING_MAX, 5, 10 }, 0 },
+    { "DMIN RATIO",     OME_FLOAT, NULL, &(OSD_FLOAT_t) { &cmsx_simplified_dmin_ratio,        SIMPLIFIED_TUNING_MIN, SIMPLIFIED_TUNING_MAX, 5, 10 }, 0 },
+    { "FF GAIN",        OME_FLOAT, NULL, &(OSD_FLOAT_t) { &cmsx_simplified_ff_gain,           SIMPLIFIED_TUNING_MIN, SIMPLIFIED_TUNING_MAX, 5, 10 }, 0 },
 
     { "-- SIMPLIFIED FILTER --", OME_Label, NULL, NULL, 0},
     { "GYRO TUNING",    OME_TAB,   NULL, &(OSD_TAB_t)   { &cmsx_simplified_gyro_filter,  1, lookupTableOffOn }, 0 },
-    { "GYRO MULT",      OME_FLOAT, NULL, &(OSD_FLOAT_t) { &cmsx_simplified_gyro_filter_multiplier,  SIMPLIFIED_TUNING_MIN, SIMPLIFIED_TUNING_MAX, 1, 10 }, 0 },
+    { "GYRO MULT",      OME_FLOAT, NULL, &(OSD_FLOAT_t) { &cmsx_simplified_gyro_filter_multiplier,  SIMPLIFIED_TUNING_MIN, SIMPLIFIED_TUNING_MAX, 5, 10 }, 0 },
     { "DTERM TUNING",   OME_TAB,   NULL, &(OSD_TAB_t)   { &cmsx_simplified_dterm_filter, 1, lookupTableOffOn }, 0 },
-    { "DTERM MULT",     OME_FLOAT, NULL, &(OSD_FLOAT_t) { &cmsx_simplified_dterm_filter_multiplier, SIMPLIFIED_TUNING_MIN, SIMPLIFIED_TUNING_MAX, 1, 10 }, 0 },
+    { "DTERM MULT",     OME_FLOAT, NULL, &(OSD_FLOAT_t) { &cmsx_simplified_dterm_filter_multiplier, SIMPLIFIED_TUNING_MIN, SIMPLIFIED_TUNING_MAX, 5, 10 }, 0 },
 
     { "-- GENERAL --", OME_Label, NULL, NULL, 0},
     { "APPLY TUNING",  OME_Funcall, cmsx_applySimplifiedTuning, NULL, 0 },
@@ -819,8 +819,8 @@ static CMS_Menu cmsx_menuFilterGlobal = {
 
 #ifdef USE_GYRO_DATA_ANALYSE
 static uint16_t dynFiltNotchMaxHz;
-static uint8_t  dynFiltWidthPercent;
-static uint16_t dynFiltNotchQ;
+static uint8_t  dynFiltCount;
+static uint16_t dynFiltBandwidthHz;
 static uint16_t dynFiltNotchMinHz;
 #endif
 #ifdef USE_DYN_LPF
@@ -838,8 +838,8 @@ static const void *cmsx_menuDynFilt_onEnter(displayPort_t *pDisp)
 
 #ifdef USE_GYRO_DATA_ANALYSE
     dynFiltNotchMaxHz   = gyroConfig()->dyn_notch_max_hz;
-    dynFiltWidthPercent = gyroConfig()->dyn_notch_width_percent;
-    dynFiltNotchQ       = gyroConfig()->dyn_notch_q;
+    dynFiltCount        = gyroConfig()->dyn_notch_count;
+    dynFiltBandwidthHz  = gyroConfig()->dyn_notch_bandwidth_hz;
     dynFiltNotchMinHz   = gyroConfig()->dyn_notch_min_hz;
 #endif
 #ifdef USE_DYN_LPF
@@ -862,8 +862,8 @@ static const void *cmsx_menuDynFilt_onExit(displayPort_t *pDisp, const OSD_Entry
 
 #ifdef USE_GYRO_DATA_ANALYSE
     gyroConfigMutable()->dyn_notch_max_hz        = dynFiltNotchMaxHz;
-    gyroConfigMutable()->dyn_notch_width_percent = dynFiltWidthPercent;
-    gyroConfigMutable()->dyn_notch_q             = dynFiltNotchQ;
+    gyroConfigMutable()->dyn_notch_count         = dynFiltCount;
+    gyroConfigMutable()->dyn_notch_bandwidth_hz  = dynFiltBandwidthHz;
     gyroConfigMutable()->dyn_notch_min_hz        = dynFiltNotchMinHz;
 #endif
 #ifdef USE_DYN_LPF
@@ -884,8 +884,8 @@ static const OSD_Entry cmsx_menuDynFiltEntries[] =
     { "-- DYN FILT --", OME_Label, NULL, NULL, 0 },
 
 #ifdef USE_GYRO_DATA_ANALYSE
-    { "NOTCH WIDTH %",  OME_UINT8,  NULL, &(OSD_UINT8_t)  { &dynFiltWidthPercent, 0, 20, 1 }, 0 },
-    { "NOTCH Q",        OME_UINT16, NULL, &(OSD_UINT16_t) { &dynFiltNotchQ,       0, 1000, 1 }, 0 },
+    { "NOTCH COUNT",    OME_UINT8,  NULL, &(OSD_UINT8_t)  { &dynFiltCount,        1, DYN_NOTCH_COUNT_MAX, 1 }, 0 },
+    { "NOTCH WIDTH HZ", OME_UINT16, NULL, &(OSD_UINT16_t) { &dynFiltBandwidthHz,  1, 1000, 1 }, 0 },
     { "NOTCH MIN HZ",   OME_UINT16, NULL, &(OSD_UINT16_t) { &dynFiltNotchMinHz,   0, 1000, 1 }, 0 },
     { "NOTCH MAX HZ",   OME_UINT16, NULL, &(OSD_UINT16_t) { &dynFiltNotchMaxHz,   0, 1000, 1 }, 0 },
 #endif
