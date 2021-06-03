@@ -266,7 +266,7 @@ FAST_CODE float alphaBetaGammaApply(alphaBetaGammaFilter_t *filter, float input)
 	const float rk = input - filter->xk_1;
 	// update our estimates given the residual error.
 	filter->xk_1 += filter->a * rk;
-	filter->vk_1 += filter->a / filter->dT * rk;
+	filter->vk_1 += filter->b / filter->dT * rk;
 	if (filter->g != 0.0f)
 	{
 		filter->ak_1 += filter->g / (2.0f * filter->dT2) * rk;
